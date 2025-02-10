@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import React from "react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
+  preload: false
 });
 
 export const metadata: Metadata = {
@@ -24,11 +21,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <head>
+      <title>{metadata.title?.toString()}</title>
+      <link
+        href={"https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"}
+        rel="stylesheet"
+      />
+      <link rel="preconnect" href="https://fonts.googleapis.com"/>
+      <link rel="preconnect" href="https://fonts.gstatic.com"/>
+    </head>
+    <body
+      className={`${inter.className} antialiased`}
+    >
+    {children}
+    </body>
     </html>
   );
 }

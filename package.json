@@ -1,27 +1,59 @@
 {
   "name": "my-desktop-admin",
   "version": "0.1.0",
+  "author": "SlynxCZ",
+  "description": "Desktop app for MySQL/MariaDB database management",
   "private": true,
+  "main": "main.js",
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "concurrently \"npm run next-dev\" \"npm run electron-wait\"",
+    "electron-wait": "wait-on http://localhost:3000 && electron .",
+    "next-dev": "next dev --turbo",
+    "next-build": "next build",
+    "build": "npm run next-build && electron-builder",
+    "start": "electron ."
   },
   "dependencies": {
+    "concurrently": "^9.1.2",
+    "next": "15.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.1.6"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
+    "electron": "^34.1.1",
+    "electron-builder": "^25.1.8",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
-    "@eslint/eslintrc": "^3"
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5",
+    "wait-on": "^8.0.2"
+  },
+  "build": {
+    "appId": "com.slynxcz.my-desktop-admin",
+    "productName": "My Desktop Admin",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "out/**/*",
+      "main.js"
+    ],
+    "mac": {
+      "target": "dmg",
+      "icon": "public/michallogo.png"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "public/michallogo.png"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "public/michallogo.png"
+    }
   }
 }
