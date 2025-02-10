@@ -1,0 +1,94 @@
+name: Build App for macOS, Windows, and Linux
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  # Windows build
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js App
+        run: npm run next-build
+
+      - name: Build Windows App
+        run: npx electron-builder --win --x64 --publish never
+
+      - name: Upload Windows Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyDesktopAdmin-win
+          path: dist/MyDesktopAdmin-*.exe
+
+  # macOS build
+  macos:
+    runs-on: macos-latest
+    needs: windows  # This ensures the windows job finishes first
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js App
+        run: npm run next-build
+
+      - name: Build macOS App
+        run: npx electron-builder --mac --x64 --publish never
+
+      - name: Upload macOS Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyDesktopAdmin-mac
+          path: dist/MyDesktopAdmin-*.dmg
+
+  # Linux build
+  linux:
+    runs-on: ubuntu-latest
+    needs: windows  # This ensures the windows job finishes first
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js App
+        run: npm run next-build
+
+      - name: Build Linux App
+        run: npx electron-builder --linux --x64 --publish never
+
+      - name: Upload Linux Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyDesktopAdmin-linux
+          path: dist/MyDesktopAdmin-*.AppImage
+
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
