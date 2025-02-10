@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MyDesktopAdmin-win
-          path: dist/MyDesktopAdmin-*.exe
+          path: dist/**/*.exe
 
   # macOS build
   macos:
@@ -60,7 +60,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MyDesktopAdmin-mac
-          path: dist/MyDesktopAdmin-*.dmg
+          path: dist/**/*.dmg
 
   # Linux build
   linux:
@@ -88,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MyDesktopAdmin-linux
-          path: dist/MyDesktopAdmin-*.AppImage
+          path: dist/**/*.AppImage
 
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
