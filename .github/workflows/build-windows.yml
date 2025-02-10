@@ -22,6 +22,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Build Next.js App
+        run: npm run next-build
+
       - name: Build Windows App
         run: npx electron-builder --win --x64
 
@@ -30,3 +33,5 @@ jobs:
         with:
           name: MyDesktopAdmin
           path: dist/*.exe
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
