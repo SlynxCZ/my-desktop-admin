@@ -1,4 +1,4 @@
-name: Build Windows EXE
+name: Build App for macOS, Windows, and Linux
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-latest  # Můžeme začít na Windows, pro Linux a macOS použijeme další běhy
 
     steps:
       - name: Checkout repo
@@ -17,7 +17,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 22
 
       - name: Install dependencies
         run: npm install
@@ -26,12 +26,31 @@ jobs:
         run: npm run next-build
 
       - name: Build Windows App
-        run: npx electron-builder --win --x64
+        run: npx electron-builder --win --x64 --publish never
 
-      - name: Upload Build Artifact
+      - name: Build macOS App
+        run: npx electron-builder --mac --x64 --publish never
+
+      - name: Build Linux App
+        run: npx electron-builder --linux --x64 --publish never
+
+      - name: Upload Windows Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MyDesktopAdmin
-          path: dist/*.exe
+          name: MyDesktopAdmin-win
+          path: dist/MyDesktopAdmin-*.exe
+
+      - name: Upload macOS Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyDesktopAdmin-mac
+          path: dist/MyDesktopAdmin-*.dmg
+
+      - name: Upload Linux Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyDesktopAdmin-linux
+          path: dist/MyDesktopAdmin-*.AppImage
+
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
