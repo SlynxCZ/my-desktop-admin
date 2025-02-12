@@ -1,5 +1,6 @@
 // components/Header.tsx
 import {useHeader} from "@/utils/HeaderContext";
+import React from "react";
 
 export default function Header() {
   const { activeText } = useHeader();

@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {useHeader} from "@/utils/HeaderContext";
 
@@ -26,7 +26,7 @@ const DatabaseConnectForm = () => {
       setMessage(response.data.message);
       setDatabases(response.data.data || []);
     } catch (e) {
-      // @ts-ignore
+      // @ts-expect-error no error after
       setMessage('Failed to connect: ' + e.response?.data?.message || e.message);
     }
   };
@@ -42,7 +42,7 @@ const DatabaseConnectForm = () => {
       });
       setMessage(response.data.message);
     } catch (e) {
-      // @ts-ignore
+      // @ts-expect-error no error after
       setMessage('Failed to connect to selected database: ' + e.response?.data?.message || e.message);
     }
   };
