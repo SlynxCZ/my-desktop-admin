@@ -1,5 +1,6 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import axios from 'axios';
+import {useHeader} from "@/utils/HeaderContext";
 
 const DatabaseConnectForm = () => {
   const [host, setHost] = useState('');
@@ -8,6 +9,11 @@ const DatabaseConnectForm = () => {
   const [message, setMessage] = useState('');
   const [databases, setDatabases] = useState<string[]>([]);
   const [selectedDb, setSelectedDb] = useState('');
+
+  const { setActiveText } = useHeader();
+  useEffect(() => {
+    setActiveText("Connection")
+  },[setActiveText])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

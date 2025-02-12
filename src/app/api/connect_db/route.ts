@@ -1,13 +1,9 @@
 import {NextResponse} from 'next/server';
-import {getSession} from "next-auth/react";
 import {query, setConnection} from 'mysql-enhanced';
 
 export async function POST(request: Request) {
   try {
-    const session = await getSession({ req: request });
-
-    const { host, user, password } = session;
-    const { database } = await request.json();
+    const { host, user, password, database } = await request.json();
 
     // Nastavíme připojení k databázi
     setConnection({

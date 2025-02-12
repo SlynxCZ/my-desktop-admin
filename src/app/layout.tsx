@@ -3,7 +3,6 @@ import {Inter} from "next/font/google";
 import "./globals.css";
 import React from "react";
 import Layout from "@/components/layout/Layout";
-import SessionProviderWrapper from "@/components/layout/SessionProviderWrapper";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,9 +30,7 @@ export default function RootLayout({
       <link rel="preconnect" href="https://fonts.gstatic.com"/>
     </head>
     <body className={`${inter.className} antialiased`}>
-    <SessionProviderWrapper>
       <Layout>{children}</Layout>
-    </SessionProviderWrapper>
     </body>
     </html>
   );

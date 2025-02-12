@@ -1,6 +1,5 @@
 import {NextResponse} from 'next/server';
 import {queryEx, setConnection} from 'mysql-enhanced';
-import {signIn} from "next-auth/react";
 
 export async function POST(request: Request) {
   try {
@@ -20,12 +19,6 @@ export async function POST(request: Request) {
       if (process.env.NODE_ENV === "development") console.log(errorResults)
       return NextResponse.json({ message: 'Failed to retrieve schemas.', error: errorResults }, { status: 500 });
     }
-
-    const sessionData = { host, user, password };
-    await signIn("credentials", {
-      redirect: false,
-      ...sessionData,
-    });
 
     return NextResponse.json({ message: 'Successfully retrieved schemas.', data: results.map((db) => db.Database) });
   } catch (error) {
