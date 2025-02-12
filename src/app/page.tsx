@@ -1,9 +1,9 @@
 "use client"
 
-import Login from "@/components/login";
+import DatabaseConnectForm from "@/components/DatabaseConnectForm";
 
 export default function Home() {
   return (
-    <Login />
+    <DatabaseConnectForm />
   );
 }

@@ -3,6 +3,7 @@ import {Inter} from "next/font/google";
 import "./globals.css";
 import React from "react";
 import Layout from "@/components/layout/Layout";
+import SessionProviderWrapper from "@/components/layout/SessionProviderWrapper";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,10 +17,8 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+                                     children,
+                                   }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
     <head>
@@ -31,13 +30,10 @@ export default function RootLayout({
       <link rel="preconnect" href="https://fonts.googleapis.com"/>
       <link rel="preconnect" href="https://fonts.gstatic.com"/>
     </head>
-    <body
-      className={`${inter.className} antialiased`}
-    >
-    {/*<SessionProvider>*/}
-      {/* eslint-disable-next-line react/no-children-prop */}
-      <Layout children={children}/>
-    {/*</SessionProvider>*/}
+    <body className={`${inter.className} antialiased`}>
+    <SessionProviderWrapper>
+      <Layout>{children}</Layout>
+    </SessionProviderWrapper>
     </body>
     </html>
   );

@@ -1,18 +1,32 @@
 "use client";
 
-import Footer from "./Footer";
-import Navbar from "./Navbar";
+import Header from "./Header";
+import Sidebar from "@/components/layout/Sidebar";
+import React, {useState} from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const [activeTextValue, setActiveTextValue] = useState<{ value: string; }>({value: "Dashboard"});
+  const isLoggedIn = true;
+
+  const handleHeaderValueChange = (value: string) => {
+    setActiveTextValue({ value });
+  };
+
   return (
-    <>
-      <div className="container mx-auto md:max-w-screen-2xl md:my-16 rounded-t-md">
-        <Navbar />
-        <div className="bg-fp-backdark min-h-[100px] p-4 border-x border-b border-fp-lightdark py-16">
-          <main>{children}</main>
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      {isLoggedIn && (<Sidebar/>)}
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <Header text={activeTextValue.value}/>
+
+        {/* Main content area */}
+        <div className="px-6 py-2 bg-gray-900 flex-1">
+          {children}
         </div>
-        <Footer />
       </div>
-    </>
+    </div>
   );
 }
