@@ -1,6 +1,6 @@
 "use client";
 
-import {createContext, ReactNode, useContext, useEffect, useState} from "react";
+import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import CryptoJS from "crypto-js";
 
 const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY as string;
