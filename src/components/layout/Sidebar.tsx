@@ -1,7 +1,10 @@
-// components/Sidebar.tsx
+"use client";
+
 import React from "react";
 import {useRouter} from "next/navigation";
 import {useSession} from "@/utils/SessionContext";
+import QueryExecutor from "@/components/Query";
+import {useDynamicComponent} from "@/utils/DynamicComponent";
 
 interface SidebarItem {
   name: string;
@@ -9,20 +12,20 @@ interface SidebarItem {
 }
 
 const Sidebar: React.FC = () => {
+  const { setActiveComponent } = useDynamicComponent();
   const router = useRouter();
   const { clearUser } = useSession();
 
   const items: SidebarItem[] = [
-    { name: "Databases", action: () => router.push("/databases") },
-    { name: "Tables", action: () => router.push("/tables") },
-    { name: "Queries", action: () => router.push("/queries") },
-    { name: "Settings", action: () => router.push("/settings") },
-    { name: "Sign Out", action: () => clearUser()}
+    { name: "Query", action: () => setActiveComponent(<QueryExecutor />) },
+    { name: "Sign Out", action: () => clearUser() }
   ];
 
   return (
     <div className="w-64 bg-gray-800 text-white p-4 h-full">
-      <h2 className="text-xl font-semibold">My Desktop Admin</h2>
+      <h2 className="text-xl font-semibold cursor-pointer" onClick={() => router.push("/")}>
+        My Desktop Admin
+      </h2>
       <nav className="mt-6">
         <ul>
           {items.map((item) => (

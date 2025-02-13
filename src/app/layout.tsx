@@ -3,6 +3,9 @@ import {Inter} from "next/font/google";
 import "./globals.css";
 import React from "react";
 import Layout from "@/components/layout/Layout";
+import {DynamicComponentProvider} from "@/utils/DynamicComponent";
+import {HeaderProvider} from "@/utils/HeaderContext";
+import {SessionProvider} from "@/utils/SessionContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,18 +23,26 @@ export default function RootLayout({
                                    }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-    <head>
-      <title>{metadata.title?.toString()}</title>
-      <link
-        href={"https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"}
-        rel="stylesheet"
-      />
-      <link rel="preconnect" href="https://fonts.googleapis.com"/>
-      <link rel="preconnect" href="https://fonts.gstatic.com"/>
-    </head>
-    <body className={`${inter.className} antialiased`}>
-      <Layout>{children}</Layout>
-    </body>
+      <head>
+        <title>{metadata.title?.toString()}</title>
+        <link
+          href={"https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"}
+          rel="stylesheet"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com"/>
+      </head>
+      <body className={`${inter.className} antialiased`}>
+        <SessionProvider>
+          <DynamicComponentProvider>
+            <HeaderProvider>
+              <Layout>
+                {children}
+              </Layout>
+            </HeaderProvider>
+          </DynamicComponentProvider>
+        </SessionProvider>
+      </body>
     </html>
   );
 }
