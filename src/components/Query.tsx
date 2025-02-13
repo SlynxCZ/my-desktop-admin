@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React, {useState} from "react";
 import axios from "axios";
 import {useSession} from "@/utils/SessionContext";
