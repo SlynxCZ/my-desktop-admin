@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {useHeader} from "@/utils/HeaderContext";
+import {useSession} from "@/utils/SessionContext";
 
 const DatabaseConnectForm = () => {
   const [host, setHost] = useState('');
@@ -9,11 +10,37 @@ const DatabaseConnectForm = () => {
   const [message, setMessage] = useState('');
   const [databases, setDatabases] = useState<string[]>([]);
   const [selectedDb, setSelectedDb] = useState('');
+  const [saveCredentials, setSaveCredentials] = useState(false);
 
   const { setActiveText } = useHeader();
+  const { getUser, writeUser } = useSession();
+
   useEffect(() => {
-    setActiveText("Connection")
-  },[setActiveText])
+    setActiveText("Select Schema");
+  }, [setActiveText]);
+
+  useEffect(() => {
+    const sessionData = getUser();
+    if (sessionData?.user) {
+      setHost(sessionData.host);
+      setUser(sessionData.user);
+      setPassword(sessionData.password);
+
+      (async () => {
+        try {
+          const response = await axios.post('/api/connect_schema', {
+            host: sessionData.host,
+            user: sessionData.user,
+            password: sessionData.password,
+          });
+          setMessage(response.data.message);
+          setDatabases(response.data.data || []);
+        } catch (e) {
+          setMessage('Failed to reconnect: ' + e);
+        }
+      })();
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,11 +50,17 @@ const DatabaseConnectForm = () => {
         user,
         password,
       });
+
+      if (saveCredentials) writeUser(host, user, password);
+
+      useEffect(() => {
+        setActiveText("Select Database");
+      }, [setActiveText]);
+
       setMessage(response.data.message);
       setDatabases(response.data.data || []);
     } catch (e) {
-      // @ts-expect-error no error after
-      setMessage('Failed to connect: ' + e.response?.data?.message || e.message);
+      setMessage('Failed to connect: ' + e);
     }
   };
 
@@ -42,8 +75,7 @@ const DatabaseConnectForm = () => {
       });
       setMessage(response.data.message);
     } catch (e) {
-      // @ts-expect-error no error after
-      setMessage('Failed to connect to selected database: ' + e.response?.data?.message || e.message);
+      setMessage('Failed to connect to selected database: ' + e);
     }
   };
 
@@ -100,7 +132,18 @@ const DatabaseConnectForm = () => {
               required
             />
           </div>
-          <button type="submit" className="w-full p-2 bg-blue-500 rounded mt-4">
+          <div className="mt-4">
+            <label className="text-white">
+              <input
+                type="checkbox"
+                checked={saveCredentials}
+                onChange={(e) => setSaveCredentials(e.target.checked)}
+                className="mr-2"
+              />
+              Remember me
+            </label>
+          </div>
+          <button type="submit" className="w-full p-2 bg-blue-500 rounded mt-4 text-white">
             Connect
           </button>
         </form>
