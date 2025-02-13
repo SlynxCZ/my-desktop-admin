@@ -25,7 +25,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // ✅ Při načtení aplikace zkontrolujeme uloženého uživatele (localStorage -> sessionStorage)
   useEffect(() => {
     const loadSession = () => {
-      let storedSession = localStorage.getItem("userSession") || sessionStorage.getItem("userSessionTemp");
+      const storedSession = localStorage.getItem("userSession") || sessionStorage.getItem("userSessionTemp");
 
       if (storedSession) {
         try {
