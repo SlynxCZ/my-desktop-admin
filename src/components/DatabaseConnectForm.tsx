@@ -23,7 +23,7 @@ const DatabaseConnectForm = () => {
   }, [session]);
 
   useEffect(() => {
-    setActiveText("Select Schema");
+    setActiveText("Server Connector");
   }, [setActiveText]);
 
   const handleSubmit = async (e: React.FormEvent) => {
