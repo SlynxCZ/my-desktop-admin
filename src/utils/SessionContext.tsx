@@ -1,17 +1,12 @@
 "use client";
 
 import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import CryptoJS from "crypto-js";
-
-const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY as string;
-if (!SECRET_KEY) {
-  console.error("SECRET_KEY is missing");
-}
+import axios from "axios";
 
 // 🔹 Definice kontextu
 interface SessionContextType {
   session: { host: string; user: string; password: string } | null;
-  writeSession: (host: string, user: string, password: string, save: boolean) => void;
+  writeSession: (host: string, user: string, password: string, save: boolean) => Promise<void>;
   clearSession: () => void;
 }
 
@@ -23,26 +18,31 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   // ✅ Při načtení aplikace zkontrolujeme uloženého uživatele (localStorage -> sessionStorage)
   useEffect(() => {
-    const loadSession = () => {
+    const loadSession = async () => {
       const storedSession = localStorage.getItem("userSession") || sessionStorage.getItem("userSessionTemp");
 
       if (storedSession) {
         try {
           const parsedSession = JSON.parse(storedSession);
-          if (!parsedSession?.password) {
+
+          const response = await axios.post("/api/decrypt", {encryptedText: parsedSession?.password});
+
+          const data = response.data;
+
+          if (!data) {
             console.warn("Saved password is not accessible.");
             return;
           }
 
-          const decryptedPassword = CryptoJS.AES.decrypt(parsedSession.password, SECRET_KEY).toString(CryptoJS.enc.Utf8);
-          if (!decryptedPassword) {
-            console.warn("Decrypting failed, saved data could be damaged.");
-            return;
-          }
+          const newSession = {
+            host: parsedSession.host,
+            user: parsedSession.user,
+            password: data.decrypted
+          };
 
-          setSession({ ...parsedSession, password: decryptedPassword });
+          setSession(newSession);
         } catch (error) {
-          console.error("Decrypting password failed", error);
+          console.error("Error loading session:", error);
         }
       }
     };
@@ -50,17 +50,31 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     loadSession();
   }, []);
 
-  // ✅ Trvalé přihlášení (ukládá se do `localStorage`)
-  const writeSession = (host: string, user: string, password: string, save: boolean) => {
-    const encryptedPassword = CryptoJS.AES.encrypt(password, SECRET_KEY).toString();
-    const newSession = { host, user, password: encryptedPassword };
+  // ✅ Trvalé přihlášení (ukládá se do `localStorage` a šifruje na serveru)
+  const writeSession = async (host: string, user: string, password: string, save: boolean) => {
+    try {
+      const response = await axios.post("/api/encrypt", { text: password});
 
-    if (save)
-      localStorage.setItem("userSession", JSON.stringify(newSession));
-    else
-      sessionStorage.setItem("userSessionTemp", JSON.stringify(newSession));
+      const data = response.data;
 
-    setSession({ host, user, password });
+      if (!data.encrypted) {
+        new Error(data.error || "Encryption failed");
+      }
+
+      const encryptedPassword = data.encrypted;
+      const newSession = { host, user, password: encryptedPassword };
+
+      if (save) {
+        localStorage.setItem("userSession", JSON.stringify(newSession));
+      }
+      else {
+        sessionStorage.setItem("userSessionTemp", JSON.stringify(newSession));
+      }
+
+      setSession(newSession);
+    } catch (error) {
+      console.error("Error encrypting password:", error);
+    }
   };
 
   // ✅ Odhlášení (smazání `localStorage` i `sessionStorage`)

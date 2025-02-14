@@ -36,9 +36,9 @@ const DatabaseConnectForm = () => {
       });
 
       if (saveCredentials)
-        writeSession(host, user, password, true);
+        await writeSession(host, user, password, true);
       else
-        writeSession(host, user, password, false);
+        await writeSession(host, user, password, false);
 
       setMessage(response.data.message);
     } catch (e) {

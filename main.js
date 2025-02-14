@@ -1,7 +1,7 @@
 const { app, BrowserWindow, protocol } = require("electron");
 const path = require("path");
-
 const isDev = !app.isPackaged;
+
 let mainWindow;
 
 function createWindow() {
@@ -16,22 +16,18 @@ function createWindow() {
   if (isDev) {
     mainWindow.loadURL("http://localhost:3000");
   } else {
-    const outPath = path.join(__dirname, "out");
+    mainWindow.loadURL(`file://${path.join(__dirname, "out", "index.html")}`);
 
-    mainWindow.loadURL(`file://${path.join(outPath, "index.html")}`);
-
-    // Přesměrování na správné cesty pro statické soubory
+    // 🔥 Oprava cesty ke statickým souborům Next.js
     protocol.interceptFileProtocol("file", (request, callback) => {
-      let url = request.url.replace("file:///", "").replace(/\/$/, "");
-      url = decodeURIComponent(url); // Oprava problémů s kódováním cesty
+      const url = request.url.replace("file:///", "").replace(/\/$/, "");
 
       if (url.includes("_next/static/") || url.includes("_next/image/")) {
-        callback({ path: path.join(outPath, url) });
-      } else if (url.match(/\.(js|css|woff2|png|jpg|jpeg|gif|svg|ico|txt|html)$/)) {
-        callback({ path: path.join(outPath, url) });
+        callback({ path: path.join(__dirname, "out", url) });
+      } else if (url.endsWith(".js") || url.endsWith(".css") || url.endsWith(".woff2")) {
+        callback({ path: path.join(__dirname, "out", url) });
       } else {
-        // Přesměrování na index.html (např. pro routing v Next.js)
-        callback({ path: path.join(outPath, "index.html") });
+        callback({ path: path.normalize(url) });
       }
     });
   }
@@ -46,11 +42,5 @@ app.whenReady().then(createWindow);
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
-  }
-});
-
-app.on("activate", () => {
-  if (mainWindow === null) {
-    createWindow();
   }
 });
