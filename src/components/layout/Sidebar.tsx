@@ -14,11 +14,11 @@ interface SidebarItem {
 const Sidebar: React.FC = () => {
   const { setActiveComponent } = useDynamicComponent();
   const router = useRouter();
-  const { clearUser } = useSession();
+  const { clearSession } = useSession();
 
   const items: SidebarItem[] = [
     { name: "Query", action: () => setActiveComponent(<QueryExecutor />) },
-    { name: "Sign Out", action: () => clearUser() }
+    { name: "Sign Out", action: () => clearSession() }
   ];
 
   return (

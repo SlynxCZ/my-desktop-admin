@@ -13,7 +13,7 @@ const DatabaseConnectForm = () => {
   const [saveCredentials, setSaveCredentials] = useState(false);
 
   const { setActiveText } = useHeader();
-  const { session, writeUser, writeUserTemp } = useSession();
+  const { session, writeSession } = useSession();
   const { setActiveComponent } = useDynamicComponent();
 
   useEffect(() => {
@@ -36,9 +36,9 @@ const DatabaseConnectForm = () => {
       });
 
       if (saveCredentials)
-        writeUser(host, user, password);
+        writeSession(host, user, password, true);
       else
-        writeUserTemp(host, user, password);
+        writeSession(host, user, password, false);
 
       setMessage(response.data.message);
     } catch (e) {

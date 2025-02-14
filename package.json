@@ -16,6 +16,7 @@
   "dependencies": {
     "concurrently": "^9.1.2",
     "crypto-js": "^4.2.0",
+    "electron-store": "^10.0.1",
     "mysql": "^2.18.1",
     "mysql-enhanced": "^1.1.0",
     "mysql2": "^3.12.0",

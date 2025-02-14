@@ -11,9 +11,8 @@ if (!SECRET_KEY) {
 // 🔹 Definice kontextu
 interface SessionContextType {
   session: { host: string; user: string; password: string } | null;
-  writeUser: (host: string, user: string, password: string) => void;
-  writeUserTemp: (host: string, user: string, password: string) => void;
-  clearUser: () => void;
+  writeSession: (host: string, user: string, password: string, save: boolean) => void;
+  clearSession: () => void;
 }
 
 // 🔹 Vytvoření kontextu
@@ -52,25 +51,20 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // ✅ Trvalé přihlášení (ukládá se do `localStorage`)
-  const writeUser = (host: string, user: string, password: string) => {
+  const writeSession = (host: string, user: string, password: string, save: boolean) => {
     const encryptedPassword = CryptoJS.AES.encrypt(password, SECRET_KEY).toString();
     const newSession = { host, user, password: encryptedPassword };
 
-    localStorage.setItem("userSession", JSON.stringify(newSession)); // Uloží do localStorage
-    setSession({ host, user, password });
-  };
+    if (save)
+      localStorage.setItem("userSession", JSON.stringify(newSession));
+    else
+      sessionStorage.setItem("userSessionTemp", JSON.stringify(newSession));
 
-  // ✅ Dočasné přihlášení (ukládá se do `sessionStorage`, zmizí po zavření okna)
-  const writeUserTemp = (host: string, user: string, password: string) => {
-    const encryptedPassword = CryptoJS.AES.encrypt(password, SECRET_KEY).toString();
-    const newSession = { host, user, password: encryptedPassword };
-
-    sessionStorage.setItem("userSessionTemp", JSON.stringify(newSession)); // Uloží do sessionStorage
     setSession({ host, user, password });
   };
 
   // ✅ Odhlášení (smazání `localStorage` i `sessionStorage`)
-  const clearUser = () => {
+  const clearSession = () => {
     localStorage.removeItem("userSession");
     sessionStorage.removeItem("userSessionTemp");
     setSession(null);
@@ -78,7 +72,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <SessionContext.Provider value={{ session, writeUser, writeUserTemp, clearUser }}>
+    <SessionContext.Provider value={{ session, writeSession, clearSession }}>
       {children}
     </SessionContext.Provider>
   );
